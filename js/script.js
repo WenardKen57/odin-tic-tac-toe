@@ -21,12 +21,17 @@ const GameBoard = (function () {
     board[row - 1][column - 1] = value;
   }
 
+  const getCell = function (row, column) {
+    return board[row - 1][column - 1];
+  }
+
   const getBoard = () => board;
 
   return {
     getBoard, 
     createBoard, 
-    setCell, 
+    setCell,
+    getCell,
     setRowNumber, 
     setColumnNumber,
     getRows,
@@ -40,12 +45,12 @@ function createPlayer(name) {
   let character = "";
   
   const getName = () => name;
-  const getWins = () => score;
+  const getScore = () => score;
   const incrementScore = () => score++;
   const getCharacter = () => character;
   const setMark = (char) => character = char;
 
-  return {getName, getWins, getCharacter, setMark, incrementScore};
+  return {getName, getScore, getCharacter, setMark, incrementScore};
 }
 
 function checkWinner(player) {
@@ -83,22 +88,15 @@ function checkWinner(player) {
 
   // true if it's a tie, false if there's no winner
   return board.every(row => row.every(cell => cell !== ""));
-
-
 }
 
-/*
-  play round:
-  - until someone wins the round doesn't end
-  - player can select a cell to put his mark
-  - players will take turns until someone wins
-    - when a player has made a move it decision will automatically switched to other player
-  - when a player wins a score will be added
-*/
-function playRound(players) {
-  let activePlayer = players[0];
-  
-
+function resetRound(board, emptyCell) {
+  for (let i = 0; i < GameBoard.getRows; i++) {
+    board[i] = [];
+    for (let j = 0; j < GameBoard.getColumns; j++) {
+      board[i][j] = emptyCell;
+    }
+  }
 }
 
 const GameController = (function () {
@@ -106,7 +104,7 @@ const GameController = (function () {
   const player1 = createPlayer("1");
   const player2 = createPlayer("2");
   const players = [player1, player2];
-  const emptyCell = ""
+  const emptyCell = "";
 
   player1.setMark("X");
   player2.setMark("O");
@@ -116,24 +114,31 @@ const GameController = (function () {
   let activePlayer = players[0];
 
   const cellContainer = document.querySelector(".container");
+  const pOneScore = document.querySelector("#pOneScore");
+  const pTwoScore = document.querySelector("#pTwoScore");
 
   cellContainer.addEventListener("click", (e) => {
     let cellTarget = e.target;
     let cellIndex = cellTarget.getAttribute("data-cell-index");
 
     if (cellTarget.textContent === "") {
-      cellTarget.textContent = activePlayer.getCharacter();
+      
       const rowCol = cellIndex.toString().split("");
       GameBoard.setCell(rowCol[0], rowCol[1], activePlayer.getCharacter());
-      console.log(checkWinner(activePlayer));
+      cellTarget.textContent = GameBoard.getCell(rowCol[0], rowCol[1]);
+      
+      if (checkWinner(activePlayer) === activePlayer) {
+        console.log(activePlayer);
+        GameBoard.createBoard(emptyCell);
+        for (let child of cellContainer.children) {
+          child.textContent = emptyCell;
+        }
+      }
+
+      pOneScore.textContent = player1.getScore();
+      pTwoScore.textContent = player2.getScore();
       activePlayer = (activePlayer === player1) ? player2 : player1;
     }
   })
-
-  playRound(players);
-
-  // before and after every round check if a player won
-
-  // Render
 })()
 
