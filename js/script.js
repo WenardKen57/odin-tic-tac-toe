@@ -128,9 +128,10 @@ const GameController = (function () {
       
       // Winning pattern
       if (checkWinner(activePlayer) === activePlayer) {
-        console.log(activePlayer);
+        announcement.textContent = `${activePlayer.getCharacter()} won!`
         resetRound(cellContainer, emptyCell);
       } else if (checkWinner(activePlayer)) {  // It's a tie
+        announcement.textContent = "It's a tie";
         resetRound(cellContainer, emptyCell);
       }
 
