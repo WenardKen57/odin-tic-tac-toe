@@ -90,12 +90,10 @@ function checkWinner(player) {
   return board.every(row => row.every(cell => cell !== ""));
 }
 
-function resetRound(board, emptyCell) {
-  for (let i = 0; i < GameBoard.getRows; i++) {
-    board[i] = [];
-    for (let j = 0; j < GameBoard.getColumns; j++) {
-      board[i][j] = emptyCell;
-    }
+function resetRound(cellContainer, emptyCell) {
+  GameBoard.createBoard(emptyCell);
+  for (let child of cellContainer.children) {
+    child.textContent = emptyCell;
   }
 }
 
@@ -114,6 +112,7 @@ const GameController = (function () {
   let activePlayer = players[0];
 
   const cellContainer = document.querySelector(".container");
+  const announcement = document.querySelector("#announcement");
   const pOneScore = document.querySelector("#pOneScore");
   const pTwoScore = document.querySelector("#pTwoScore");
 
@@ -127,12 +126,12 @@ const GameController = (function () {
       GameBoard.setCell(rowCol[0], rowCol[1], activePlayer.getCharacter());
       cellTarget.textContent = GameBoard.getCell(rowCol[0], rowCol[1]);
       
+      // Winning pattern
       if (checkWinner(activePlayer) === activePlayer) {
         console.log(activePlayer);
-        GameBoard.createBoard(emptyCell);
-        for (let child of cellContainer.children) {
-          child.textContent = emptyCell;
-        }
+        resetRound(cellContainer, emptyCell);
+      } else if (checkWinner(activePlayer)) {  // It's a tie
+        resetRound(cellContainer, emptyCell);
       }
 
       pOneScore.textContent = player1.getScore();
