@@ -36,75 +36,92 @@ const GameBoard = (function () {
 
 function createPlayer(name) {
   
-  let wins = 0;
+  let score = 0;
   let character = "";
   
   const getName = () => name;
   const getWins = () => wins;
+  const incrementScore = () => wins++;
   const getCharacter = () => character;
-  const setCharacter = (char) => character = char;
+  const setMark = (char) => character = char;
 
-  return {getName, getWins, getCharacter, setCharacter};
+  return {getName, getWins, getCharacter, setMark, incrementScore};
 }
 
 function checkWinner(player) {
   const board = GameBoard.getBoard();
   const pChar = player.getCharacter();
-  /*
-    1. create winning patterns
-    2. compare the board to winning patterns to see if someone wins
-      1. 
-    3. return winner
-  */
-
 
   // Check row winning pattern
   for (let i = 0; i < GameBoard.getRows(); i++) {
     if (board[i][0] === pChar && board[i][1] === pChar && board[i][2] === pChar) {
-      return true;
+      return player;
     }
   }
 
   // Check column winning pattern
   for (let i = 0; i < GameBoard.getColumns(); i++) {
     if (board[0][i] === pChar && board[1][i] === pChar && board[2][i] === pChar) {
-      return true;
+      return player;
     }
   }
 
   // Check for diagonal win pattern
   if (board[0][0] === pChar && board[1][1] === pChar && board[2][2]) {
-    return true;
+    return player;
   } else if (board[0][2] === pChar && board[1][1] === pChar && board[2][0]) {
-    return true;
+    return player;
   }
 
-  // No one wins
+  // No one wins yet
   return false;
+}
+
+/*
+  play round:
+  - until someone wins the round doesn't end
+  - player can select a cell to put his mark
+  - players will take turns until someone wins
+    - when a player has made a move it decision will automatically switched to other player
+  - when a player wins a score will be added
+*/
+function playRound(players) {
+  let activePlayer = players[0];
+  
+
 }
 
 const GameController = (function () {
   
   const player1 = createPlayer("1");
   const player2 = createPlayer("2");
-  const players = [];
+  const players = [player1, player2];
 
-  player1.setCharacter("X");
-  player2.setCharacter("O");
-  players.push(player1);
-  players.push(player2);
+  player1.setMark("X");
+  player2.setMark("O");
 
-  GameBoard.createBoard(0);
+  GameBoard.createBoard("");
 
   let activePlayer = players[0];
-  
-  // Update board
 
-  GameBoard.setCell(1, 3, player1.getCharacter());
-  GameBoard.setCell(2, 2, player1.getCharacter());
-  GameBoard.setCell(3, 1, player1.getCharacter());
+  const cellContainer = document.querySelector(".container");
 
-  console.log(checkWinner(activePlayer));
+  cellContainer.addEventListener("click", (e) => {
+    let cellTarget = e.target;
+    let cellIndex = cellTarget.getAttribute("data-cell-index");
+
+    if (cellTarget.textContent === "") {
+      cellTarget.textContent = activePlayer.getCharacter();
+      const rowCol = cellIndex.toString().split("");
+      GameBoard.setCell(rowCol[0], rowCol[1], activePlayer.getCharacter());
+      console.log(checkWinner(activePlayer));
+      activePlayer = (activePlayer === player1) ? player2 : player1;
+    }
+
+    
+  })
+
+  playRound(players);
 
   // before and after every round check if a player won
 
