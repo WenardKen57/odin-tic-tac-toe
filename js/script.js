@@ -99,8 +99,8 @@ function resetRound(cellContainer, emptyCell) {
 
 const GameController = (function () {
   
-  const player1 = createPlayer("1");
-  const player2 = createPlayer("2");
+  const player1 = createPlayer(prompt("Enter player 1 name: "));
+  const player2 = createPlayer(prompt("Enter player 2 name: "));
   const players = [player1, player2];
   const emptyCell = "";
 
@@ -128,7 +128,7 @@ const GameController = (function () {
       
       // Winning pattern
       if (checkWinner(activePlayer) === activePlayer) {
-        announcement.textContent = `${activePlayer.getCharacter()} won!`
+        announcement.textContent = `${activePlayer.getName()} won!`
         resetRound(cellContainer, emptyCell);
       } else if (checkWinner(activePlayer)) {  // It's a tie
         announcement.textContent = "It's a tie";
@@ -141,4 +141,3 @@ const GameController = (function () {
     }
   })
 })()
-
