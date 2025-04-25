@@ -4,6 +4,8 @@
 
 A simple tic tac toe game I built for fun! Check it out!
 
+Live preview: [Visit Here](https://wenardken57.github.io/odin-tic-tac-toe/)
+
 
 ## Why build this project?
 
